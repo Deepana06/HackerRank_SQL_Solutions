@@ -139,3 +139,111 @@ select percentile_cont(0.5) within group(order by LAT_N)
 over(partition by id1) as Median from
 (select 1 as id1,* from station)r1
 )r
+
+/*Draw Triangle*/
+
+
+DECLARE @Counter INT 
+SET @Counter=20
+WHILE ( @Counter >= 1)
+BEGIN
+    select replicate('*',@Counter)
+    SET @Counter  = @Counter  - 1
+END
+
+
+DECLARE @Counter INT 
+SET @Counter=1
+WHILE ( @Counter <= 20)
+BEGIN
+    select replicate('* ',@Counter)
+    SET @Counter  = @Counter  + 1
+END
+
+/*You are given two tables: Students and Grades. Students contains three columns ID, Name and Marks.
+
+
+
+Grades contains the following data:
+
+
+
+Ketty gives Eve a task to generate a report containing three columns: Name, Grade and Mark. Ketty doesn't want the NAMES of those students who received a grade lower than 8. The report must be in descending order by grade -- i.e. higher grades are entered first. If there is more than one student with the same grade (8-10) assigned to them, order those particular students by their name alphabetically. Finally, if the grade is lower than 8, use "NULL" as their name and list them by their grades in descending order. If there is more than one student with the same grade (1-7) assigned to them, order those particular students by their marks in ascending order.
+
+Write a query to help Eve.
+
+Sample Input
+
+
+
+Sample Output
+
+Maria 10 99
+Jane 9 81
+Julia 9 88 
+Scarlet 8 78
+NULL 7 63
+NULL 7 68
+
+Note
+
+Print "NULL"  as the name if the grade is less than 8.
+
+Explanation
+
+Consider the following table with the grades assigned to the students:
+
+
+
+So, the following students got 8, 9 or 10 grades:
+
+Maria (grade 10)
+Jane (grade 9)
+Julia (grade 9)
+Scarlet (grade 8)*/
+
+;WITH Result as (select *, CASE when marks between 0 and 9 then 1
+when marks between 10 and 19 then 2
+when marks between 20 and 29 then 3
+when marks between 30 and 39 then 4
+when marks between 40 and 49 then 5
+when marks between 50 and 59 then 6
+when marks between 60 and 69 then 7
+when marks between 70 and 79 then 8
+when marks between 80 and 89 then 9
+when marks between 90 and 100 then 10 end as Grade
+from students )Select Name, Grade, Marks from Result
+where Grade>=8
+union 
+Select NULL as Name, Grade, Marks from Result
+where Grade<8
+order by 2 desc, 1 asc,3 asc
+
+/*Write a query identifying the type of each record in the TRIANGLES table using its three side lengths. 
+Output one of the following statements for each record in the table:
+Equilateral: It's a triangle with  sides of equal length.
+Isosceles: It's a triangle with  sides of equal length.
+Scalene: It's a triangle with  sides of differing lengths.
+Not A Triangle: The given values of A, B, and C don't form a triangle.*/
+
+select 
+case  
+when A+B<=C or A+C<=B or B+C<=A then  'Not A Triangle'
+when A=B and B=C and C=A then 'Equilateral'
+when A=B or B=C or C=A  then 'Isosceles'
+when A<>B and B<>C and C<>A then 'Scalene'
+else 'Not A Triangle' 
+End 
+from triangles;
+
+/*Query the difference between the maximum and minimum populations in CITY.*/
+
+SELECT MAX(Population)-MIN(Population)as diff_population FROM CITY
+
+/*Samantha was tasked with calculating the average monthly salaries for all employees in the EMPLOYEES table, but did not realize her keyboard's  
+key was broken until after completing the calculation. She wants your help finding the difference between her miscalculation 
+(using salaries with any zeros removed), and the actual average salary.
+
+Write a query calculating the amount of error (i.e.:  average monthly salaries), and round it up to the next integer.*/
+
+select  CEILING(AVG(cast(salary as decimal(12,7)))-AVG(cast(REPLACE(Salary, 0, '') as decimal(12,7))))  from employees;
